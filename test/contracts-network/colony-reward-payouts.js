@@ -793,6 +793,143 @@ contract("Colony Reward Payouts", accounts => {
       expect(info.blockTimestamp).to.eq.BN(blockTimestamp);
     });
 
+    it.only("should not allow double-counting of tokens", async () => {
+      // Setting up a new token and colony
+      const tokenArgs = getTokenArgs();
+      const newToken = await Token.new(...tokenArgs);
+      await newToken.unlock();
+      let { logs } = await colonyNetwork.createColony(newToken.address);
+      const { colonyAddress } = logs[0].args;
+      await newToken.setOwner(colonyAddress);
+      const newColony = await IColony.at(colonyAddress);
+
+      const payoutTokenArgs = getTokenArgs();
+      const payoutToken = await Token.new(...payoutTokenArgs);
+      await payoutToken.unlock();
+      await fundColonyWithTokens(newColony, payoutToken, totalTokens);
+      // Issuing colony's internal tokens so they can be given to users in `bootstrapColony`
+      await newColony.mintTokens(totalReputation);
+
+      // Every user has equal amount of reputation and tokens (totalReputationAndTokens / 3)
+      const reputationPerUser = totalReputation.divn(3);
+      const tokensPerUser = new BN(reputationPerUser);
+      // Giving colony's internal tokens to 3 users.
+      // Reputation log is appended to inactive reputation mining cycle
+      await newColony.claimColonyFunds(newToken.address);
+      await newColony.bootstrapColony([userAddress1, userAddress2, userAddress3], [reputationPerUser, reputationPerUser, reputationPerUser]);
+
+      await newColony.setRewardInverse(100);
+
+      // Submit current hash in active reputation mining cycle
+      await advanceMiningCycleNoContest({ colonyNetwork, client, test: this });
+
+      // Reputation added while bootstrapping the colony is now in active reputation mining cycle, so submit the hash
+      await advanceMiningCycleNoContest({ colonyNetwork, client, test: this });
+      const result = await newColony.getDomain(1);
+      const rootDomainSkill = result.skillId;
+      const colonyWideReputationKey = makeReputationKey(newColony.address, rootDomainSkill);
+      let { key, value, branchMask, siblings } = await client.getReputationProofObject(colonyWideReputationKey, true);
+      colonyWideReputationProof = [key, value, branchMask, siblings];
+      console.log(colonyWideReputationProof);
+
+      // This will allow token locking contract to sent tokens on users behalf
+      await newToken.approve(tokenLocking.address, tokensPerUser, { from: userAddress1 });
+      await newToken.approve(tokenLocking.address, tokensPerUser, { from: userAddress2 });
+      await newToken.approve(tokenLocking.address, tokensPerUser, { from: userAddress3 });
+
+      // Send tokens to token locking contract.
+      await tokenLocking.deposit(newToken.address, tokensPerUser, { from: userAddress1 });
+      await tokenLocking.deposit(newToken.address, tokensPerUser, { from: userAddress2 });
+      await tokenLocking.deposit(newToken.address, tokensPerUser, { from: userAddress3 });
+      await forwardTime(30*3600*24, this); // 30 days
+      ({ logs } = await newColony.startNextRewardPayout(payoutToken.address, ...colonyWideReputationProof));
+      const payoutId = logs[0].args.rewardPayoutId;
+      console.log('payoutId');
+      let [squareRoots, userReputationProof] = await getRewardProofs(newColony, newToken, tokenLocking, userAddress1, reputationPerUser, totalReputation, rootDomainSkill, client);
+      console.log('asdf')
+      await newColony.claimRewardPayout(payoutId, squareRoots, ...userReputationProof, {
+        from: userAddress1
+      });
+      console.log('asdf')
+      // This user now withdraws
+      await tokenLocking.withdraw(newToken.address, userReputation, { from: userAddress1 });
+      // Sends to user 2
+      await newToken.transfer(userAddress2, userTokens, { from: userAddress1 });
+
+      // User 2 sends tokens to token locking contract.
+      await newToken.approve(tokenLocking.address, tokensPerUser, { from: userAddress2 });
+      await tokenLocking.deposit(newToken.address, tokensPerUser, { from: userAddress2 });
+      console.log('user 2 deposited');
+      // Get users locked token amount from token locking contract
+      const info = await tokenLocking.getUserLock(newToken.address, userAddress1);
+      const userLockedTokens = new BN(info.balance);
+      [squareRoots, userReputationProof] = await getRewardProofs(newColony, newToken, tokenLocking, userAddress2, reputationPerUser, totalReputation, rootDomainSkill, client);
+      console.log(squareRoots, userReputationProof);
+
+      await newColony.claimRewardPayout(payoutId, squareRoots, ...userReputationProof, {
+        from: userAddress2
+      });
+
+      // Now user 3 tries to claim
+      [squareRoots, userReputationProof] = await getRewardProofs(newColony, newToken, tokenLocking, userAddress3, reputationPerUser, totalReputation, rootDomainSkill, client);
+
+      await newColony.claimRewardPayout(payoutId, squareRoots, ...userReputationProof, {
+        from: userAddress3
+      });
+
+    });
+
+async function getRewardProofs(colony, token, tokenLocking, userAddress, userReputation, totalReputation, rootDomainSkill, client) {
+    // Getting total amount available for payout
+  const amountAvailableForPayout = await colony.getFundingPotBalance(0, token.address);
+
+  const totalSupply = await token.totalSupply();
+  const colonyTokens = await token.balanceOf(colony.address);
+  // Transforming it to BN instance
+  const totalTokensHeldByUsers = new BN(totalSupply.sub(colonyTokens));
+
+  // Get users locked token amount from token locking contract
+  const info = await tokenLocking.getUserLock(token.address, userAddress);
+  const userLockedTokens = new BN(info.balance);
+
+  // Calculating the reward payout for one user locally to check against on-chain result
+  const numerator = bnSqrt(userLockedTokens.mul(userReputation));
+  const denominator = bnSqrt(totalTokensHeldByUsers.mul(totalReputation));
+  const factor = new BN(10).pow(new BN(100));
+  const percent = numerator.mul(factor).div(denominator);
+  let reward = amountAvailableForPayout.mul(percent).div(factor);
+  const feeInverse = await colonyNetwork.getFeeInverse();
+  const fee = reward.div(feeInverse).addn(1);
+  reward = reward.sub(fee);
+
+  // Calculating square roots locally, to avoid big gas costs. This can be proven on chain easily
+  const userReputationSqrt = bnSqrt(userReputation);
+  const userTokensSqrt = bnSqrt(userLockedTokens);
+  const totalReputationSqrt = bnSqrt(totalReputation, true);
+  const totalTokensSqrt = bnSqrt(totalTokensHeldByUsers, true);
+  const numeratorSqrt = bnSqrt(numerator);
+  const denominatorSqrt = bnSqrt(totalTokensSqrt.mul(totalReputationSqrt), true);
+  const amountAvailableForPayoutSqrt = bnSqrt(amountAvailableForPayout);
+
+  const squareRoots = [
+    userReputationSqrt,
+    userTokensSqrt,
+    totalReputationSqrt,
+    totalTokensSqrt,
+    numeratorSqrt,
+    denominatorSqrt,
+    amountAvailableForPayoutSqrt
+  ];
+
+  let userReputationKey = makeReputationKey(colony.address, rootDomainSkill, userAddress);
+  console.log(userReputationKey);
+  let key, value, branchMask, siblings;
+  ({ key, value, branchMask, siblings } = await client.getReputationProofObject(userReputationKey));
+  console.log(key, value, branchMask, siblings);
+  const userReputationProof = [key, value, branchMask, siblings];
+  return [squareRoots, userReputationProof]
+}
+
     const reputations = [
       {
         totalReputation: new BN(3),
