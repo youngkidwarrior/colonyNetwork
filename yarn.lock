@@ -677,10 +677,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@codechecks/client@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@codechecks/client/-/client-0.1.5.tgz#635d905ea2db6e2502a7510dabdba24ddef44d56"
-  integrity sha512-/IcKf0j8dDXjlC3D1RgRNGGk0oo1733v+QH9rnp9urZe/+9fAi0M0aTqYl060ZTnyJgwh9Fek+/5zkOswVFJQA==
+"@codechecks/client@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@codechecks/client/-/client-0.1.6.tgz#f163b1913730abb7103eea8fa97ec5e5010955dd"
+  integrity sha512-zfsSmLFHb0oNoY8wl3YOmU/6PsoCOk22zKLoCMotALXXGx1QwzdRGKOnocYIjixdCQKfvuA9+dSTB3FsWia5Qg==
   dependencies:
     bluebird "^3.5.3"
     chalk "^2.4.2"
