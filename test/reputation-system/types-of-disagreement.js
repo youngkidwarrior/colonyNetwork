@@ -35,8 +35,8 @@ import MaliciousReputationMinerWrongNewestReputation from "../../packages/reputa
 import MaliciousReputationMinerClaimNew from "../../packages/reputation-miner/test/MaliciousReputationMinerClaimNew";
 import MaliciousReputationMinerUnsure from "../../packages/reputation-miner/test/MaliciousReputationMinerUnsure";
 import MaliciousReputationMinerWrongJRH from "../../packages/reputation-miner/test/MaliciousReputationMinerWrongJRH";
-import MaliciousReputationMinerWrongNNodes from "../../packages/reputation-miner/test/MaliciousReputationMinerWrongNNodes";
-import MaliciousReputationMinerWrongNNodes2 from "../../packages/reputation-miner/test/MaliciousReputationMinerWrongNNodes2";
+import MaliciousReputationMinerWrongNLeaves from "../../packages/reputation-miner/test/MaliciousReputationMinerWrongNLeaves";
+import MaliciousReputationMinerWrongNLeaves2 from "../../packages/reputation-miner/test/MaliciousReputationMinerWrongNLeaves2";
 import MaliciousReputationMinerAddNewReputation from "../../packages/reputation-miner/test/MaliciousReputationMinerAddNewReputation";
 
 const { expect } = chai;
@@ -135,7 +135,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       const disputedRound = await repCycle.getDisputeRound(round1);
       const disputedEntry = disputedRound[index1];
       const submission = await repCycle.getReputationHashSubmission(goodClient.minerAddress);
-      expect(submission.jrhNNodes).to.be.zero;
+      expect(submission.jrhNLeaves).to.be.zero;
       await forwardTime(10, this); // This is just to ensure that the timestamps checked below will be different if JRH was submitted.
 
       await goodClient.confirmJustificationRootHash();
@@ -363,8 +363,8 @@ contract("Reputation Mining - types of disagreement", accounts => {
     });
   });
 
-  describe("should correctly resolve dispute over nNodes", () => {
-    it("where the submitted nNodes is lied about", async () => {
+  describe("should correctly resolve dispute over nLeaves", () => {
+    it("where the submitted nLeaves is lied about", async () => {
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING);
       await setupFinalizedTask({ colonyNetwork, colony: metaColony });
 
@@ -375,7 +375,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       const nInactiveLogEntries = await repCycle.getReputationUpdateLogLength();
       expect(nInactiveLogEntries).to.eq.BN(5);
 
-      const badClient = new MaliciousReputationMinerWrongNNodes({ loader, realProviderPort, useJsTree, minerAddress: MINER2 }, 8);
+      const badClient = new MaliciousReputationMinerWrongNLeaves({ loader, realProviderPort, useJsTree, minerAddress: MINER2 }, 8);
       await badClient.initialise(colonyNetwork.address);
 
       await submitAndForwardTimeToDispute([goodClient, badClient], this);
@@ -387,23 +387,23 @@ contract("Reputation Mining - types of disagreement", accounts => {
       await repCycle.confirmNewHash(1);
     });
 
-    it("where the number of nodes has been incremented incorrectly when adding a new reputation", async () => {
+    it("where the number of leaves has been incremented incorrectly when adding a new reputation", async () => {
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
-      const badClient = new MaliciousReputationMinerWrongNNodes2({ loader, realProviderPort, useJsTree, minerAddress: MINER2 }, 3, 1);
+      const badClient = new MaliciousReputationMinerWrongNLeaves2({ loader, realProviderPort, useJsTree, minerAddress: MINER2 }, 3, 1);
       await badClient.initialise(colonyNetwork.address);
 
       await advanceMiningCycleNoContest({ colonyNetwork, test: this });
 
       await submitAndForwardTimeToDispute([goodClient, badClient], this);
       await accommodateChallengeAndInvalidateHash(colonyNetwork, this, goodClient, badClient, {
-        client2: { respondToChallenge: "colony-network-mining-more-than-one-node-added" }
+        client2: { respondToChallenge: "colony-network-mining-more-than-one-leaf-added" }
       });
       const repCycle = await getActiveRepCycle(colonyNetwork);
       await repCycle.confirmNewHash(1);
     });
 
-    it("where the number of nodes has been incremented during an update of an existing reputation", async () => {
+    it("where the number of leaves has been incremented during an update of an existing reputation", async () => {
       await fundColonyWithTokens(metaColony, clnyToken, INITIAL_FUNDING);
       await setupFinalizedTask({ colonyNetwork, colony: metaColony });
 
@@ -414,7 +414,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       const nInactiveLogEntries = await repCycle.getReputationUpdateLogLength();
       expect(nInactiveLogEntries).to.eq.BN(5);
 
-      const badClient = new MaliciousReputationMinerWrongNNodes2({ loader, realProviderPort, useJsTree, minerAddress: MINER2 }, 8, 1);
+      const badClient = new MaliciousReputationMinerWrongNLeaves2({ loader, realProviderPort, useJsTree, minerAddress: MINER2 }, 8, 1);
       await badClient.initialise(colonyNetwork.address);
 
       await submitAndForwardTimeToDispute([goodClient, badClient], this);
@@ -545,7 +545,7 @@ contract("Reputation Mining - types of disagreement", accounts => {
       // I think this test is now obsoleted. If a new reputation's UID is wrong:
       // 1. It could be too small. But then either
       //    a) If we provide the right previousNewRepuationID for the new UID we're claiming, it will be too small
-      //       compared to nNodes in the lastAgree state in the JRHs, and respondToChallenge will fail with
+      //       compared to nLeaves in the lastAgree state in the JRHs, and respondToChallenge will fail with
       //       colony-reputation-mining-proved-uid-inconsistent
       //    b) If we supply the right previousNewReputationID when compared to lastAgreeState, then respondToChallenge will
       //       fail with colony-reputation-mining-new-uid-incorrect
@@ -646,15 +646,15 @@ contract("Reputation Mining - types of disagreement", accounts => {
   });
 
   describe("should correctly resolve dispute over reputation value", () => {
-    it.skip("if a too high previous reputation larger than nNodes is provided", async () => {
+    it.skip("if a too high previous reputation larger than nLeaves is provided", async () => {
       // I think this test is impossible to write, now.
-      // This test requires (essentially) that intermediateReputationNNodes - previousNewReputationUID is > 1, and get to saveProvedReputation
+      // This test requires (essentially) that intermediateReputationNLeaves - previousNewReputationUID is > 1, and get to saveProvedReputation
       // without tripping another require.
-      // intermediateReputationNNodes is the same as DisagreeStateNNodes (so we could get rid of one, but that's for another PR...), so we need
-      // disagreeStateNNodes - previousNewReputationUID > 1. We now enforce that DisagreeStateNNodes - AgreeStateNNodes is either 1 or 0, based on
-      // whether the submitter claims a new node was added or not. Making the most optimistic substitution, we require that
-      // 1 + AgreeStateNNodes - previousNewREputationUID > 1, or AgreeStateNNodes > previousNewReputationUID
-      // Unfortunately, agreeStateNNodes is either equal to or one less than previousNewReputationUID, depending on whether a new node
+      // intermediateReputationNLeaves is the same as DisagreeStateNLeaves (so we could get rid of one, but that's for another PR...), so we need
+      // disagreeStateNLeaves - previousNewReputationUID > 1. We now enforce that DisagreeStateNLeaves - AgreeStateNLeaves is either 1 or 0, based on
+      // whether the submitter claims a new leaf was added or not. Making the most optimistic substitution, we require that
+      // 1 + AgreeStateNLeaves - previousNewREputationUID > 1, or AgreeStateNLeaves > previousNewReputationUID
+      // Unfortunately, agreeStateNLeaves is either equal to or one less than previousNewReputationUID, depending on whether a new leaf
       // is added or not.
       // So skipping this test, and leaving in the require for now in case I am wrong. This seems like a _very_ good candidate for an experimentation
       // with formal proofs, though....

@@ -42,12 +42,12 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
     // Check the binary search result has been confirmed
     Submission storage submission = reputationHashSubmissions[disputeRounds[round][idx].firstSubmitter];
     require(
-      2**(disputeRounds[round][idx].challengeStepCompleted-2)>submission.jrhNNodes,
+      2**(disputeRounds[round][idx].challengeStepCompleted-2)>submission.jrhNLeaves,
       "colony-reputation-mining-binary-search-result-not-confirmed"
     );
     // Check that we have not already responded to the challenge
     require(
-      2**(disputeRounds[round][idx].challengeStepCompleted-3)<=submission.jrhNNodes,
+      2**(disputeRounds[round][idx].challengeStepCompleted-3)<=submission.jrhNLeaves,
       "colony-reputation-mining-challenge-already-responded"
     );
     _;
@@ -56,9 +56,9 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
   uint constant U_ROUND = 0;
   uint constant U_IDX = 1;
   uint constant U_REPUTATION_BRANCH_MASK = 2;
-  uint constant U_AGREE_STATE_NNODES = 3;
+  uint constant U_AGREE_STATE_NLEAVES = 3;
   uint constant U_AGREE_STATE_BRANCH_MASK = 4;
-  uint constant U_DISAGREE_STATE_NNODES = 5;
+  uint constant U_DISAGREE_STATE_NLEAVES = 5;
   uint constant U_DISAGREE_STATE_BRANCH_MASK = 6;
   uint constant U_PREVIOUS_NEW_REPUTATION_BRANCH_MASK = 7;
   uint constant U_LOG_ENTRY_NUMBER = 8;
@@ -116,8 +116,8 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
     u[U_DECAY_TRANSITION] = 0;
     u[U_GLOBAL_CHILD_UPDATE] = 0;
     u[U_NEW_REPUTATION] = 0;
-    // Require disagree state nnodes - agree state nnodes is either 0 or 1. Its a uint, so we can simplify this to < 2.
-    require(u[U_DISAGREE_STATE_NNODES] - u[U_AGREE_STATE_NNODES] < 2, "colony-network-mining-more-than-one-node-added");
+    // Require disagree state nleaves - agree state nleaves is either 0 or 1. Its a uint, so we can simplify this to < 2.
+    require(u[U_DISAGREE_STATE_NLEAVES] - u[U_AGREE_STATE_NLEAVES] < 2, "colony-network-mining-more-than-one-leaf-added");
     // TODO: More checks that this is an appropriate time to respondToChallenge (maybe in modifier);
     /* bytes32 jrh = disputeRounds[round][idx].jrh; */
     // The contract knows
@@ -199,7 +199,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       u[U_ADJACENT_REPUTATION_BRANCH_MASK],
       adjacentReputationSiblings
     );
-    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NNODES]);
+    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NLEAVES]);
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on
     bytes32 impliedRoot = getImpliedRootNoHashKey(
       bytes32(disputedEntry.lowerBound - 1),
@@ -230,7 +230,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       afterInsertionAdjacentReputationSiblings
     );
 
-    jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_DISAGREE_STATE_NNODES]);
+    jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_DISAGREE_STATE_NLEAVES]);
     // Prove that state is in our JRH, in the index corresponding to the first state that the two submissions disagree on
     impliedRoot = getImpliedRootNoHashKey(
       bytes32(disputedEntry.lowerBound),
@@ -345,14 +345,14 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
     disputeRounds[u[U_ROUND]][u[U_IDX]].lastResponseTimestamp = now;
     Submission storage submission = reputationHashSubmissions[disputeRounds[u[U_ROUND]][u[U_IDX]].firstSubmitter];
 
-    emit ChallengeCompleted(submission.proposedNewRootHash, submission.nNodes, submission.jrh);
+    emit ChallengeCompleted(submission.proposedNewRootHash, submission.nLeaves, submission.jrh);
   }
 
   function checkKey(uint256[29] memory u, bytes32[8] memory b32) internal view {
-    // If the state transition we're checking is less than the number of nodes in the currently accepted state, it's a decay transition
+    // If the state transition we're checking is less than the number of leaves in the currently accepted state, it's a decay transition
     // Otherwise, look up the corresponding entry in the reputation log.
     uint256 updateNumber = disputeRounds[u[U_ROUND]][u[U_IDX]].lowerBound - 1;
-    if (updateNumber < IColonyNetwork(colonyNetworkAddress).getReputationRootHashNNodes()) {
+    if (updateNumber < IColonyNetwork(colonyNetworkAddress).getReputationRootHashNLeaves()) {
       checkKeyDecay(u, updateNumber);
       u[U_DECAY_TRANSITION] = 1;
     } else {
@@ -423,7 +423,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
     bytes32[] memory agreeStateSiblings
   ) internal view
   {
-    if (u[U_DISAGREE_STATE_NNODES] - u[U_AGREE_STATE_NNODES] == 1) {
+    if (u[U_DISAGREE_STATE_NLEAVES] - u[U_AGREE_STATE_NLEAVES] == 1) {
       // This implies they are claiming that this is a new hash.
       // Flag we need to check the adjacent hash
       u[U_NEW_REPUTATION] = 1;
@@ -441,21 +441,21 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       u[U_REPUTATION_BRANCH_MASK],
       reputationSiblings);
 
-    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NNODES]);
+    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NLEAVES]);
 
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on.
     bytes32 impliedRoot = getImpliedRootNoHashKey(bytes32(lastAgreeIdx), jhLeafValue, u[U_AGREE_STATE_BRANCH_MASK], agreeStateSiblings);
 
     Submission storage submission = reputationHashSubmissions[disputeRounds[u[U_ROUND]][u[U_IDX]].firstSubmitter];
     require(impliedRoot == submission.jrh, "colony-reputation-mining-invalid-before-reputation-proof");
-    // Check that they have not changed nNodes from the agree state
+    // Check that they have not changed NLEAVES from the agree state
     // There is a check at the very start of RespondToChallenge that this difference is either 0 or 1.
     // There is an 'if' statement above that returns if this difference is 1.
     // Therefore the difference is 0, and this should always be true.
-    assert(u[U_DISAGREE_STATE_NNODES] == u[U_AGREE_STATE_NNODES]);
+    assert(u[U_DISAGREE_STATE_NLEAVES] == u[U_AGREE_STATE_NLEAVES]);
     // They've actually verified whatever they claimed.
     // In the event that our opponent lied about this reputation not existing yet in the tree, they will fail on checkAdjacentReputation,
-    // as the branchmask generated will indicate that the node already exists
+    // as the branchmask generated will indicate that the leaf already exists
   }
 
   function proveAfterReputationValue(
@@ -477,7 +477,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       reputationSiblings
     );
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on.
-    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_DISAGREE_STATE_NNODES]);
+    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_DISAGREE_STATE_NLEAVES]);
 
     bytes32 impliedRoot = getImpliedRootNoHashKey(
       bytes32(firstDisagreeIdx),
@@ -602,8 +602,8 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
   // Get the update number relative in the context of the log entry currently considered
   // e.g. for log entry with 6 updates, the relative update number range is [0 .. 5] (inclusive)
   function getRelativeUpdateNumber(uint256[29] memory u, ReputationLogEntry memory logEntry) internal view returns (uint256) {
-    uint256 nNodes = IColonyNetwork(colonyNetworkAddress).getReputationRootHashNNodes();
-    uint256 updateNumber = sub(sub(disputeRounds[u[U_ROUND]][u[U_IDX]].lowerBound, 1), nNodes);
+    uint256 nLeaves = IColonyNetwork(colonyNetworkAddress).getReputationRootHashNLeaves();
+    uint256 updateNumber = sub(sub(disputeRounds[u[U_ROUND]][u[U_IDX]].lowerBound, 1), nLeaves);
 
     // Check that the supplied log entry corresponds to this update number
     require(updateNumber >= logEntry.nPreviousUpdates, "colony-reputation-mining-update-number-part-of-previous-log-entry-updates");
@@ -647,7 +647,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       u[U_PREVIOUS_NEW_REPUTATION_BRANCH_MASK],
       previousNewReputationSiblings
     );
-    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NNODES]);
+    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NLEAVES]);
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on
     bytes32 impliedRoot = getImpliedRootNoHashKey(bytes32(lastAgreeIdx), jhLeafValue, u[U_AGREE_STATE_BRANCH_MASK], agreeStateSiblings);
     Submission storage submission = reputationHashSubmissions[disputeRounds[u[U_ROUND]][u[U_IDX]].firstSubmitter];
@@ -683,7 +683,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       userOriginReputationStateSiblings
     );
 
-    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NNODES]);
+    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NLEAVES]);
 
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on
     bytes32 impliedRoot = getImpliedRootNoHashKey(bytes32(lastAgreeIdx), jhLeafValue, u[U_AGREE_STATE_BRANCH_MASK], agreeStateSiblings);
@@ -715,7 +715,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       u[U_USER_ORIGIN_SKILL_REPUTATION_BRANCH_MASK],
       userOriginReputationStateSiblings
     );
-    jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NNODES]);
+    jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NLEAVES]);
 
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on
     impliedRoot = getImpliedRootNoHashKey(bytes32(lastAgreeIdx), jhLeafValue, u[U_AGREE_STATE_BRANCH_MASK], agreeStateSiblings);
@@ -742,7 +742,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       childReputationStateSiblings
     );
 
-    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NNODES]);
+    bytes memory jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NLEAVES]);
 
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on
     bytes32 impliedRoot = getImpliedRootNoHashKey(bytes32(lastAgreeIdx), jhLeafValue, u[U_AGREE_STATE_BRANCH_MASK], agreeStateSiblings);
@@ -772,7 +772,7 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
       u[U_CHILD_REPUTATION_BRANCH_MASK],
       childReputationStateSiblings
     );
-    jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NNODES]);
+    jhLeafValue = abi.encodePacked(uint256(reputationRootHash), u[U_AGREE_STATE_NLEAVES]);
 
     // Prove that state is in our JRH, in the index corresponding to the last state that the two submissions agree on
     impliedRoot = getImpliedRootNoHashKey(bytes32(lastAgreeIdx), jhLeafValue, u[U_AGREE_STATE_BRANCH_MASK], agreeStateSiblings);
@@ -781,11 +781,11 @@ contract ReputationMiningCycleRespond is ReputationMiningCycleStorage, PatriciaT
 
   function saveProvedReputation(uint256[29] memory u) internal {
     // Require that it is at least plausible
-    uint256 delta = disputeRounds[u[U_ROUND]][u[U_IDX]].intermediateReputationNNodes - u[U_PREVIOUS_NEW_REPUTATION_UID];
+    uint256 delta = disputeRounds[u[U_ROUND]][u[U_IDX]].intermediateReputationNLeaves - u[U_PREVIOUS_NEW_REPUTATION_UID];
     // Could be zero if this is an update to an existing reputation, or it could be 1 if we have just added a new
     // reputation. Anything else is inconsistent.
     // We don't care about over/underflowing, and don't want to use `sub` so that this require message is returned.
-    require(delta == u[U_DISAGREE_STATE_NNODES]-u[U_AGREE_STATE_NNODES], "colony-reputation-mining-proved-uid-inconsistent");
+    require(delta == u[U_DISAGREE_STATE_NLEAVES]-u[U_AGREE_STATE_NLEAVES], "colony-reputation-mining-proved-uid-inconsistent");
     // Save the index for tiebreak scenarios later.
     disputeRounds[u[U_ROUND]][u[U_IDX]].provedPreviousReputationUID = u[U_PREVIOUS_NEW_REPUTATION_UID];
   }

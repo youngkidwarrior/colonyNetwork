@@ -404,9 +404,9 @@ export async function submitAndForwardTimeToDispute(clients, test) {
   // If there are multiple submissions, ensure they are all different
   const submissionsPromise = clients.map(async client => {
     const rootHash = await client.getRootHash();
-    const nNodes = await client.getRootHashNNodes();
+    const nLeaves = await client.getRootHashNLeaves();
     const jrh = await client.justificationTree.getRootHash();
-    return rootHash + nNodes + jrh;
+    return rootHash + nLeaves + jrh;
   });
 
   const submissions = await Promise.all(submissionsPromise);
@@ -517,7 +517,7 @@ async function navigateChallenge(colonyNetwork, client1, client2, errors) {
 
   // Submit JRH for submission 1 if needed
   // We only do this if client2 is defined so that we test JRH submission in rounds other than round 0.
-  if (submission1before.jrhNNodes === "0") {
+  if (submission1before.jrhNLeaves === "0") {
     if (errors.client1.confirmJustificationRootHash) {
       await checkErrorRevertEthers(client1.confirmJustificationRootHash(), errors.client1.confirmJustificationRootHash);
     } else {
@@ -533,7 +533,7 @@ async function navigateChallenge(colonyNetwork, client1, client2, errors) {
     "Clients are not facing each other in this round"
   ).to.be.true;
 
-  if (submission2before.jrhNNodes === "0") {
+  if (submission2before.jrhNLeaves === "0") {
     if (errors.client2.confirmJustificationRootHash) {
       await checkErrorRevertEthers(client2.confirmJustificationRootHash(), errors.client2.confirmJustificationRootHash);
     } else {
