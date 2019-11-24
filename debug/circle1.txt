@@ -1,0 +1,446 @@
+ 174 passing (22m)
+  17 failing
+
+  1) Contract: Colony Network Recovery
+       "before each" hook for "miner should be able to correctly interpret historical reputation logs replaced during recovery mode":
+
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+  Error:     at PromiEvent (node_modules/truffle/build/webpack:/packages/contract/lib/promievent.js:9:1)
+      at TruffleContract.getReputationMiningCycle (node_modules/truffle/build/webpack:/packages/contract/lib/execute.js:120:1)
+      at getReputationMiningCycle (helpers/test-helper.js:437:36)
+      at tryCatch (node_modules/regenerator-runtime/runtime.js:45:40)
+      at Generator.invoke [as _invoke] (node_modules/regenerator-runtime/runtime.js:271:22)
+      at Generator.prototype.(anonymous function) [as next] (node_modules/regenerator-runtime/runtime.js:97:21)
+      at asyncGeneratorStep (helpers/test-helper.js:8471:103)
+      at _next (helpers/test-helper.js:8473:194)
+      at /home/circleci/colonyNetwork/helpers/test-helper.js:8473:364
+      at new Promise (<anonymous>)
+      at /home/circleci/colonyNetwork/helpers/test-helper.js:8473:97
+      at getActiveRepCycle (helpers/test-helper.js:9791:29)
+      at getActiveRepCycle (helpers/test-helper.js:444:26)
+      at tryCatch (node_modules/regenerator-runtime/runtime.js:45:40)
+      at Generator.invoke [as _invoke] (node_modules/regenerator-runtime/runtime.js:271:22)
+      at Generator.prototype.(anonymous function) [as next] (node_modules/regenerator-runtime/runtime.js:97:21)
+      at asyncGeneratorStep (helpers/test-helper.js:8471:103)
+      at _next (helpers/test-helper.js:8473:194)
+      at process._tickCallback (internal/process/next_tick.js:68:7)
+
+  2) Contract: Colony Network
+       "before each" hook for "should have the Resolver for current Colony version set":
+     Error: finalizeTask(uint256) could not be registered. Is it defined?
+      at _callee$ (helpers/upgradable-contracts.js:64:15)
+      at tryCatch (node_modules/regenerator-runtime/runtime.js:45:40)
+      at Generator.invoke [as _invoke] (node_modules/regenerator-runtime/runtime.js:271:22)
+      at Generator.prototype.(anonymous function) [as throw] (node_modules/regenerator-runtime/runtime.js:97:21)
+      at asyncGeneratorStep (helpers/upgradable-contracts.js:24:103)
+      at _throw (helpers/upgradable-contracts.js:26:291)
+      at process._tickCallback (internal/process/next_tick.js:68:7)
+
+  3) Contract: Colony Payment
+       when finalizing payments
+         "before each" hook for "should not be able to set a payout above the limit":
+
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+  Error:     at PromiEvent (node_modules/truffle/build/webpack:/packages/contract/lib/promievent.js:9:1)
+      at TruffleContract.getPaymentCount (node_modules/truffle/build/webpack:/packages/contract/lib/execute.js:120:1)
+      at getPaymentCount (test/contracts-network/colony-payment.js:207:32)
+      at tryCatch (node_modules/regenerator-runtime/runtime.js:45:40)
+      at Generator.invoke [as _invoke] (node_modules/regenerator-runtime/runtime.js:271:22)
+      at Generator.prototype.(anonymous function) [as next] (node_modules/regenerator-runtime/runtime.js:97:21)
+      at asyncGeneratorStep (test/contracts-network/colony-payment.js:27:103)
+      at _next (test/contracts-network/colony-payment.js:29:194)
+      at process._tickCallback (internal/process/next_tick.js:68:7)
+
+  4) Contract: Colony Payment
+       "before each" hook: before test for "should allow recipient to claim their payment and network fee is deducated":
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  5) Contract: ColonyPermissions
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  6) Contract: Colony Recovery
+       "before all" hook:
+
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+  Error:     at PromiEvent (node_modules/truffle/build/webpack:/packages/contract/lib/promievent.js:9:1)
+      at TruffleContract.lookup (node_modules/truffle/build/webpack:/packages/contract/lib/execute.js:120:1)
+      at lookup (helpers/upgradable-contracts.js:67:42)
+      at tryCatch (node_modules/regenerator-runtime/runtime.js:45:40)
+      at Generator.invoke [as _invoke] (node_modules/regenerator-runtime/runtime.js:271:22)
+      at Generator.prototype.(anonymous function) [as next] (node_modules/regenerator-runtime/runtime.js:97:21)
+      at asyncGeneratorStep (helpers/upgradable-contracts.js:24:103)
+      at _next (helpers/upgradable-contracts.js:26:194)
+      at process._tickCallback (internal/process/next_tick.js:68:7)
+
+  7) Contract: Colony Reward Payouts
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  8) Contract: Colony Task Work Rating
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  9) Contract: ColonyTask
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  10) Contract: Colony Token Integration
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  11) Contract: Colony
+       "before all" hook:
+
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+  Error:     at PromiEvent (node_modules/truffle/build/webpack:/packages/contract/lib/promievent.js:9:1)
+      at TruffleContract.lookup (node_modules/truffle/build/webpack:/packages/contract/lib/execute.js:120:1)
+      at lookup (helpers/upgradable-contracts.js:67:42)
+      at tryCatch (node_modules/regenerator-runtime/runtime.js:45:40)
+      at Generator.invoke [as _invoke] (node_modules/regenerator-runtime/runtime.js:271:22)
+      at Generator.prototype.(anonymous function) [as next] (node_modules/regenerator-runtime/runtime.js:97:21)
+      at asyncGeneratorStep (helpers/upgradable-contracts.js:24:103)
+      at _next (helpers/upgradable-contracts.js:26:194)
+      at process._tickCallback (internal/process/next_tick.js:68:7)
+
+  12) Contract: Meta Colony
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  13) Contract: Reputation mining - basic functionality
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  14) Contract: Reputation Updates
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  15) Contract: EtherRouter / Resolver
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  16) Contract: Token Locking
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+  17) Contract: One transaction payments
+       "before all" hook: prepare suite:
+     Error:
+Could not connect to your Ethereum client with the following parameters:
+    - host       > localhost
+    - port       > 8545
+    - network_id > 1574463524414
+Please check that your Ethereum client:
+    - is running
+    - is accepting RPC connections (i.e., "--rpc" option is used in geth)
+    - is accessible over the network
+    - is properly configured in your Truffle configuration file (truffle-config.js)
+
+      at ProviderError.ExtendableError (node_modules/truffle/build/webpack:/packages/error/index.js:10:1)
+      at new ProviderError (node_modules/truffle/build/webpack:/packages/provider/error.js:12:1)
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:75:1
+      at /home/circleci/colonyNetwork/node_modules/truffle/build/webpack:/packages/provider/wrapper.js:107:1
+      at XMLHttpRequest.request.onreadystatechange (node_modules/truffle/build/webpack:/node_modules/web3-providers-http/src/index.js:102:1)
+      at XMLHttpRequestEventTarget.dispatchEvent (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request-event-target.js:34:1)
+      at XMLHttpRequest._setReadyState (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:208:1)
+      at XMLHttpRequest._onHttpRequestError (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:349:1)
+      at ClientRequest.<anonymous> (node_modules/truffle/build/webpack:/node_modules/xhr2-cookies/dist/xml-http-request.js:252:47)
+      at Socket.socketErrorListener (_http_client.js:391:9)
+      at emitErrorNT (internal/streams/destroy.js:82:8)
+      at emitErrorAndCloseNT (internal/streams/destroy.js:50:3)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
+
+
+
+error Command failed with exit code 17.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Exited with code 1
