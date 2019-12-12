@@ -237,11 +237,6 @@ contract("Voting Reputation", accounts => {
       const taskCountPost = await colony.getTaskCount();
       expect(taskCountPost).to.eq.BN(taskCountPrev);
     });
-
-    it("cannot execute a vote without reaching quorum", async () => {
-      await forwardTime(SECONDS_PER_DAY * 3, this);
-      await checkErrorRevert(voting.executePoll(pollId), "voting-base-quorum-not-met");
-    });
   });
 
   describe("simple exceptions", async () => {

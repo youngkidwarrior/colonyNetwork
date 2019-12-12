@@ -27,7 +27,6 @@ contract VotingBase is DSMath {
 
   // Constants
   uint256 constant REVEAL_PERIOD = 2 days;
-  uint256 constant QUORUM_INVERSE = 10;
 
   // Initialization data
   IColony colony;
@@ -57,7 +56,6 @@ contract VotingBase is DSMath {
   function executePoll(uint256 _pollId) public returns (bool) {
     require(getPollState(_pollId) != PollState.Executed, "voting-base-poll-already-executed");
     require(getPollState(_pollId) == PollState.Closed, "voting-base-poll-not-closed");
-    require(quorumMet(_pollId), "voting-base-quorum-not-met");
 
     Poll storage poll = polls[_pollId];
     poll.executed = true;
@@ -86,11 +84,6 @@ contract VotingBase is DSMath {
     } else {
       return PollState.Executed;
     }
-  }
-
-  function quorumMet(uint256 _pollId) public view returns (bool) {
-    Poll storage poll = polls[_pollId];
-    return add(poll.votes[0], poll.votes[1]) > (poll.maxVotes / QUORUM_INVERSE);
   }
 
   function executeCall(address to, bytes memory data) internal returns (bool success) {
