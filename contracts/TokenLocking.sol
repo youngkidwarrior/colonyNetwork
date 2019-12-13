@@ -149,6 +149,40 @@ contract TokenLocking is TokenLockingStorage, DSMath { // ignore-swc-123
     }
   }
 
+  function approveStake(address _colony, uint256 _amount) public {
+    address token = IColony(_colony).getToken();
+
+    approvals[msg.sender][token][_colony] = add(approvals[msg.sender][token][_colony], _amount);
+  }
+
+  function obligateStake(address _user, uint256 _amount) public calledByColony() {
+    address token = IColony(msg.sender).getToken();
+
+    approvals[_user][token][msg.sender] = sub(approvals[_user][token][msg.sender], _amount);
+    obligations[_user][token][msg.sender] = add(obligations[_user][token][msg.sender], _amount);
+    totalObligations[_user][token] = add(totalObligations[_user][token], _amount);
+
+    require(userLocks[token][_user].balance >= totalObligations[_user][token], "colony-token-locking-insufficient-deposit");
+  }
+
+  function deobligateStake(address _user, uint256 _amount) public calledByColony() {
+    address token = IColony(msg.sender).getToken();
+
+    obligations[_user][token][msg.sender] = sub(obligations[_user][token][msg.sender], _amount);
+    totalObligations[_user][token] = sub(totalObligations[_user][token], _amount);
+  }
+
+  function slashStake(address _user, uint256 _amount) public calledByColony() {
+    address token = IColony(msg.sender).getToken();
+
+    obligations[_user][token][msg.sender] = sub(obligations[_user][token][msg.sender], _amount);
+    totalObligations[_user][token] = sub(totalObligations[_user][token], _amount);
+
+    // Burn the tokens
+    userLocks[token][_user].balance = sub(userLocks[token][_user].balance, _amount);
+    ERC20Extended(token).transfer(address(0x0), _amount);
+  }
+
   function getTotalLockCount(address _token) public view returns (uint256) {
     return totalLockCount[_token];
   }
