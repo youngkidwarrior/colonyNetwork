@@ -206,9 +206,11 @@ contract ColonyStorage is CommonStorage, ColonyDataTypes, ColonyNetworkDataTypes
     require(domainExists(_permissionDomainId), "ds-auth-permission-domain-does-not-exist");
     require(domainExists(_childDomainId), "ds-auth-child-domain-does-not-exist");
     require(isAuthorized(msg.sender, _permissionDomainId, msg.sig), "ds-auth-unauthorized");
-    if (_permissionDomainId != _childDomainId) {
-      require(validateDomainInheritance(_permissionDomainId, _childSkillIndex, _childDomainId), "ds-auth-invalid-domain-inheritence");
-    }
+    require(
+      (_childSkillIndex == UINT256_MAX && _permissionDomainId == _childDomainId) ||
+      validateDomainInheritance(_permissionDomainId, _childSkillIndex, _childDomainId),
+      "ds-auth-invalid-domain-inheritence"
+    );
     if (canCallOnlyBecauseArchitect(msg.sender, _permissionDomainId, msg.sig)) {
       require(_permissionDomainId != _childDomainId, "ds-auth-only-authorized-in-child-domain");
     }
