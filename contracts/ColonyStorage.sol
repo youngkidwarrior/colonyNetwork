@@ -186,9 +186,7 @@ contract ColonyStorage is CommonStorage, ColonyDataTypes, ColonyNetworkDataTypes
   // Note that these require messages currently cannot propogate up because of the `executeTaskRoleAssignment` logic
   modifier isAdmin(uint256 _permissionDomainId, uint256 _childSkillIndex, uint256 _id, address _user) {
     require(ColonyAuthority(address(authority)).hasUserRole(_user, _permissionDomainId, uint8(ColonyRole.Administration)), "colony-not-admin");
-    if (_permissionDomainId != tasks[_id].domainId) {
-      require(validateDomainInheritance(_permissionDomainId, _childSkillIndex, tasks[_id].domainId), "ds-auth-invalid-domain-inheritence");
-    }
+    require(validateDomainInheritance(_permissionDomainId, _childSkillIndex, tasks[_id].domainId), "ds-auth-invalid-domain-inheritence");
     _;
   }
 
@@ -206,11 +204,7 @@ contract ColonyStorage is CommonStorage, ColonyDataTypes, ColonyNetworkDataTypes
     require(domainExists(_permissionDomainId), "ds-auth-permission-domain-does-not-exist");
     require(domainExists(_childDomainId), "ds-auth-child-domain-does-not-exist");
     require(isAuthorized(msg.sender, _permissionDomainId, msg.sig), "ds-auth-unauthorized");
-    require(
-      (_childSkillIndex == UINT256_MAX && _permissionDomainId == _childDomainId) ||
-      validateDomainInheritance(_permissionDomainId, _childSkillIndex, _childDomainId),
-      "ds-auth-invalid-domain-inheritence"
-    );
+    require(validateDomainInheritance(_permissionDomainId, _childSkillIndex, _childDomainId), "ds-auth-invalid-domain-inheritence");
     if (canCallOnlyBecauseArchitect(msg.sender, _permissionDomainId, msg.sig)) {
       require(_permissionDomainId != _childDomainId, "ds-auth-only-authorized-in-child-domain");
     }
@@ -219,8 +213,12 @@ contract ColonyStorage is CommonStorage, ColonyDataTypes, ColonyNetworkDataTypes
 
   // Evaluates a "domain proof" which checks that childDomainId is part of the subtree starting at permissionDomainId
   function validateDomainInheritance(uint256 permissionDomainId, uint256 childSkillIndex, uint256 childDomainId) internal view returns (bool) {
-    uint256 childSkillId = IColonyNetwork(colonyNetworkAddress).getChildSkillId(domains[permissionDomainId].skillId, childSkillIndex);
-    return childSkillId == domains[childDomainId].skillId;
+    if (permissionDomainId == childDomainId) {
+      return childSkillIndex == UINT256_MAX;
+    } else {
+      uint256 childSkillId = IColonyNetwork(colonyNetworkAddress).getChildSkillId(domains[permissionDomainId].skillId, childSkillIndex);
+      return childSkillId == domains[childDomainId].skillId;
+    }
   }
 
   // Checks to see if the permission comes ONLY from the ArchitectureSubdomain role (i.e. user does not have root, etc.)

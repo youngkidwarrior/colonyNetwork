@@ -79,7 +79,7 @@ contract("ColonyPermissions", accounts => {
     it("should let users query for roles in domain and subdomains", async () => {
       let administrationRole = await colony.hasUserRole(FOUNDER, 1, ADMINISTRATION_ROLE);
       expect(administrationRole).to.be.true;
-      administrationRole = await colony.hasInheritedUserRole(FOUNDER, 1, ADMINISTRATION_ROLE, 0, 1);
+      administrationRole = await colony.hasInheritedUserRole(FOUNDER, 1, ADMINISTRATION_ROLE, X, 1);
       expect(administrationRole).to.be.true;
       administrationRole = await colony.hasInheritedUserRole(FOUNDER, 1, ADMINISTRATION_ROLE, 0, 2);
       expect(administrationRole).to.be.true;
@@ -88,7 +88,7 @@ contract("ColonyPermissions", accounts => {
 
       administrationRole = await colony.hasUserRole(USER1, 1, ADMINISTRATION_ROLE);
       expect(administrationRole).to.be.false;
-      administrationRole = await colony.hasInheritedUserRole(USER1, 1, ADMINISTRATION_ROLE, 0, 1);
+      administrationRole = await colony.hasInheritedUserRole(USER1, 1, ADMINISTRATION_ROLE, X, 1);
       expect(administrationRole).to.be.false;
       administrationRole = await colony.hasInheritedUserRole(USER1, 1, ADMINISTRATION_ROLE, 0, 2);
       expect(administrationRole).to.be.false;
