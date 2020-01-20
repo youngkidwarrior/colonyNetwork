@@ -2,8 +2,8 @@ import { soliditySha3 } from "web3-utils";
 import { BN } from "bn.js";
 import shortid from "shortid";
 
-const X = new BN(0).notn(256); // Shorthand for UINT256_MAX for domain proofs
 const UINT256_MAX = new BN(0).notn(256);
+const MAX = UINT256_MAX; // Shorthand for domain proofs
 const UINT128_MAX = new BN(0).notn(128);
 const INT256_MAX = new BN(0).notn(255);
 const INT128_MAX = new BN(2).pow(new BN(127)).sub(new BN(1));
@@ -65,7 +65,7 @@ const DECAY_RATE = {
 const GLOBAL_SKILL_ID = new BN("3"); // Not a root global skill ID or anything, just the first global skill's ID
 
 module.exports = {
-  X,
+  MAX,
   UINT256_MAX,
   INT256_MAX,
   INT128_MAX,
